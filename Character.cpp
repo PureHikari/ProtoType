@@ -22,7 +22,8 @@ bool character::init()
 		return false;
 	}
 
-	this->initWithFile("closeNormal.png");
+	this->initWithFile("hero.png");
+	//this->setAnchorPoint(Vec2::ANCHOR_TOP_LEFT);
 
 	return true;
 }
@@ -97,7 +98,7 @@ void character::stop(DIRECTION dr)
 
 void character::jump()
 {
-	if (m_isJumping)
+	if (m_isJumping || m_isFalling)
 	{
 		//如果处于跳跃状态，则直接返回不执行跳跃操作
 		return;
@@ -106,5 +107,32 @@ void character::jump()
 	{
 		m_isJumping = true;
 		//comming soon
+		this->runAction(Sequence::create(MoveBy::create(HERO_MOVE_TIME, Vec2(0, GRID_SIZE * 4)), CallFuncN::create([=](Ref*) {
+			m_isJumping = false;
+		}), nullptr));
 	}
+}
+
+void character::jumpToHead()
+{
+	m_isJumping = false;
+	//unschedule("jumping");
+	log("comming soonish");
+}
+
+void character::fallDown()
+{
+	m_isFalling = true;
+	this->runAction(MoveBy::create(HERO_FALL_TIME, Vec2(0, -GRID_SIZE)));
+	schedule([=](float) {
+		this->runAction(MoveBy::create(HERO_FALL_TIME,Vec2(0,-GRID_SIZE)));
+	}, HERO_FALL_TIME, "fallDown");
+}
+
+void character::land()
+{
+	scheduleOnce([=](float) {
+		m_isFalling = false;
+	}, 0.1f, "forSafe");
+	unschedule("fallDown");
 }
