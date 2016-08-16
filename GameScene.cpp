@@ -1,6 +1,8 @@
 #include "GameScene.h"
 #include "ui/CocosGUI.h"
 
+#include "FileControl.h"
+
 USING_NS_CC;
 
 Scene* GameScene::createScene()
@@ -80,6 +82,17 @@ void GameScene::initListener()
 
 void GameScene::initMap()
 {
+	auto content = FileControl::getMapData();
+
+	for (auto i = content.begin(); i != content.end(); i++)
+	{
+		if (i->isBreal)
+		{
+			m_map[i->x][i->y] = MapElement::BAREAL;
+		}
+	}
+
+	/*
 	//添加地面
 	for (int i = 0; i < GRID_X; i++)
 	{
@@ -100,6 +113,7 @@ void GameScene::initMap()
 	m_map[6][5] = MapElement::BAREAL;
 	m_map[7][5] = MapElement::BAREAL;
 	m_map[8][5] = MapElement::BAREAL;
+	//*/
 
 	//添加临时的英雄出生位置
 	m_map[4][0] = MapElement::HEROPOS;
