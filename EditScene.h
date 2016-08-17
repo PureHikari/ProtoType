@@ -18,10 +18,10 @@ private:
 class EditScene :public cocos2d::Layer
 {
 public:
-	static cocos2d::Scene* createScene();
-	bool virtual init();
+	static cocos2d::Scene* createScene(int id, bool isNew);
+	bool virtual init(int id, bool isNew);
 
-	CREATE_FUNC(EditScene);
+	static EditScene* create(int id, bool isNew);
 
 	//划出格子之间的线
 	void drawGridLine();
@@ -33,4 +33,8 @@ public:
 	void saveMap();
 private:
 	MapGrid* m_map[GRID_X][GRID_Y];
+
+	//地图元素
+	int m_mapId = 0;
+	bool m_isNew = false;
 };

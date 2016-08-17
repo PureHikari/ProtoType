@@ -5,14 +5,27 @@
 
 USING_NS_CC;
 
-Scene* GameScene::createScene()
+Scene* GameScene::createScene(int id)
 {
 	auto scene = Scene::create();
-	auto layer = GameScene::create();
+	auto layer = GameScene::create(id);
 
 	scene->addChild(layer);
 
 	return scene;
+}
+
+GameScene* GameScene::create(int id)
+{
+	auto gs = new GameScene();
+	if (gs && gs->init(id))
+	{
+		gs->autorelease();
+		return gs;
+	}
+
+	CC_SAFE_DELETE(gs);
+	return nullptr;
 }
 
 void GameScene::onKeyPress(EventKeyboard::KeyCode keyCode, Event* event)
@@ -82,7 +95,7 @@ void GameScene::initListener()
 
 void GameScene::initMap()
 {
-	auto content = FileControl::getMapData();
+	auto content = FileControl::getMapData(m_mapId);
 
 	for (auto i = content.begin(); i != content.end(); i++)
 	{
@@ -91,29 +104,6 @@ void GameScene::initMap()
 			m_map[i->x][i->y] = MapElement::BAREAL;
 		}
 	}
-
-	/*
-	//添加地面
-	for (int i = 0; i < GRID_X; i++)
-	{
-		m_map[i][GRID_Y-1] = MapElement::BAREAL;
-	}
-
-	m_map[1][3] = MapElement::BAREAL;
-	m_map[2][3] = MapElement::BAREAL;
-	m_map[3][3] = MapElement::BAREAL;
-	m_map[4][3] = MapElement::BAREAL;
-
-	m_map[1][7] = MapElement::BAREAL;
-	m_map[2][7] = MapElement::BAREAL;
-	m_map[3][7] = MapElement::BAREAL;
-	m_map[4][7] = MapElement::BAREAL;
-
-	m_map[5][5] = MapElement::BAREAL;
-	m_map[6][5] = MapElement::BAREAL;
-	m_map[7][5] = MapElement::BAREAL;
-	m_map[8][5] = MapElement::BAREAL;
-	//*/
 
 	//添加临时的英雄出生位置
 	m_map[4][0] = MapElement::HEROPOS;
@@ -150,9 +140,11 @@ void GameScene::paintMap()
 				default:break;
 			}
 
-			/*//加载格子编号，调试用
-			auto lab = Label::createWithSystemFont(StringUtils::format("%d:%d",i,j), "", 32);
-			lab->setPosition(Vec2(i*GRID_SIZE, VISIBLE_SIZE.height - j*GRID_SIZE));
+			/*
+			//加载格子编号，调试用
+			auto lab = Label::createWithSystemFont(StringUtils::format("%d",i), "", 16);
+			lab->setPosition(Vec2(i*GRID_SIZE, VISIBLE_SIZE.height - j*GRID_SIZE) + Vec2(GRID_SIZE/2,-GRID_SIZE/2));
+			lab->setColor(Color3B::BLACK);
 			this->addChild(lab, 10);
 			//*/
 		}
@@ -168,34 +160,51 @@ void GameScene::initHero()
 
 bool GameScene::isNextLand(Vec2 pos,bool isDown)
 {
-	int x = pos.x / GRID_SIZE;
+	int x = (pos.x + GRID_SIZE / 2) / GRID_SIZE;
 	int y = (VISIBLE_SIZE.height - pos.y + GRID_SIZE / 2) / GRID_SIZE;
+
+	/*
+	//测试用，标明主角当前所在的x轴格子编号
+	auto lab = (Label*)m_hero->getChildByTag(777);
+	if (lab)
+	{
+		lab->setString(StringUtils::format("%d", x));
+	}
+	else
+	{
+		lab = Label::createWithSystemFont(StringUtils::format("%d", x), "", 32);
+		lab->setPosition(m_hero->getContentSize() / 2);
+		m_hero->addChild(lab, 99 , 777);
+	}
+	//*/
 
 	if (!isDown)
 	{
 		y = (VISIBLE_SIZE.height - pos.y + GRID_SIZE) / GRID_SIZE;
 	}
 
+	bool flag = false;
+
 	if (y < GRID_Y)
 	{
 		if (isDown)
 		{
-			if (m_map[x][y + 1] == MapElement::BAREAL || m_map[x + 1][y + 1] == MapElement::BAREAL)
+			if (m_map[x][y + 1] == MapElement::BAREAL || m_map[x - 1][y + 1] == MapElement::BAREAL)
 			{
-				return true;
+				flag = true;
 			}
 		}
 		else
 		{
 			if (m_map[x][y - 1] == MapElement::BAREAL || m_map[x + 1][y - 1] == MapElement::BAREAL)
 			{
-				return true;
+				flag = true;
 			}
 		}
 		
 	}
 
-	return false;
+	return flag;
 }
 
 void GameScene::fallDown()
@@ -219,11 +228,13 @@ void GameScene::fallDown()
 		}
 		else
 		{
+			/*
 			//判断是否撞到头
 			if (isNextLand(m_hero->getPosition(), false))
 			{
 				m_hero->jumpToHead();
 			}
+			//*/
 		}
 	}
 
@@ -234,12 +245,14 @@ void GameScene::update(float)
 	fallDown();
 }
 
-bool GameScene::init()
+bool GameScene::init(int id)
 {
 	if (!Layer::init())
 	{
 		return false;
 	}
+
+	m_mapId = id;
 
 	initMap();
 	paintMap();
@@ -255,7 +268,7 @@ bool GameScene::init()
 	this->addChild(button, 11);
 
 	button->addClickEventListener([=](Ref*) {
-		auto scene = GameScene::createScene();
+		auto scene = GameScene::createScene(id);
 		Director::getInstance()->replaceScene(scene);
 	});
 

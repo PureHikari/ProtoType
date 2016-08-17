@@ -44,13 +44,25 @@ void MapGrid::change()
 
 //==============================================
 //场景部分
-Scene* EditScene::createScene()
+Scene* EditScene::createScene(int id, bool isNew)
 {
 	auto scene = Scene::create();
-	auto layer = EditScene::create();
+	auto layer = EditScene::create(id,isNew);
 	scene->addChild(layer);
 
 	return scene;
+}
+
+EditScene* EditScene::create(int id, bool isNew)
+{
+	auto es = new EditScene();
+	if (es && es->init(id,isNew))
+	{
+		es->autorelease();
+		return es;
+	}
+	CC_SAFE_DELETE(es);
+	return nullptr;
 }
 
 bool EditScene::onBegin(Touch* touch, Event* event)
@@ -82,6 +94,7 @@ void EditScene::onPress(EventKeyboard::KeyCode keyCode, Event* event)
 void EditScene::saveMap()
 {
 	mapData content;
+	allMapCell data;
 
 	for (int i = 0; i < GRID_X; i++)
 	{
@@ -95,7 +108,16 @@ void EditScene::saveMap()
 		}
 	}
 
-	FileControl::saveMapData(content);
+	int id = m_mapId;
+	if (m_isNew)
+	{
+		id = -1;//表示为新建的地图
+	}
+
+	data.data = content;
+	data.id = id;
+
+	FileControl::saveMapData(data);
 
 	auto scene = TitleScene::createScene();
 	Director::getInstance()->replaceScene(scene);
@@ -143,14 +165,30 @@ void EditScene::drawGridLine()
 			m_map[i][j] = mg;
 		}
 	}
+
+	//如果是已有的地图，则开始加载
+	if (!m_isNew)
+	{
+		auto data = FileControl::getMapData(m_mapId);
+
+		for (auto i = data.begin(); i != data.end(); i++)
+		{
+			if (i->isBreal)
+			{
+				m_map[i->x][i->y]->change();
+			}
+		}
+	}
 }
 
-bool EditScene::init()
+bool EditScene::init(int id, bool isNew)
 {
 	if (!Layer::init())
 	{
 		return false;
 	}
+
+	m_mapId = id;
 
 	auto bg = Sprite::create("bg.png");
 	bg->setPosition(VISIBLE_SIZE / 2);

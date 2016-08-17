@@ -8,10 +8,7 @@ public:
 	bool virtual init();
 	CREATE_FUNC(TitleScene);
 
-	//进入新游戏
-	void newGame();
-
-	//进入编辑模式
-	void editMode();
+	//选择关卡界面,参数为是否是编辑模式，编辑模式下有新建按钮
+	void showMapSelect(bool isEdit);
 private:
 };

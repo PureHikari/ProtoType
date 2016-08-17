@@ -14,10 +14,9 @@ enum class MapElement
 class GameScene :public cocos2d::Layer
 {
 public:
-	static cocos2d::Scene*  createScene();
-	bool virtual init();
-
-	CREATE_FUNC(GameScene);
+	static cocos2d::Scene*  createScene(int id);
+	static GameScene* create(int id);
+	bool virtual init(int id);
 
 	//添加各种监视器
 	void initListener();
@@ -58,4 +57,7 @@ private:
 	//地图,用二维数组表示，暂时事先规定大小
 	//i表示横向的数据，j表示竖向的数据，绘制时，从左上绘制
 	MapElement m_map[GRID_X][GRID_Y] = { MapElement::NONE };
+
+	//地图的编号
+	int m_mapId = 0;
 };
