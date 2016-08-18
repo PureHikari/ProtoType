@@ -29,6 +29,8 @@ public:
 
 	void fallDown();//开始下落
 	void land();//落到地面，停止下落
+
+	void stopped(bool left, bool right);
 protected:
 	//角色的朝向，默认为朝右
 	DIRECTION m_direction = DIRECTION::RIGHT;
@@ -40,4 +42,7 @@ protected:
 
 	//角色的速度，代表每走一格所需要的时间
 	float m_speed = 1.0f;
+
+	bool m_isLeftStop = false;
+	bool m_isRightStop = false;
 };

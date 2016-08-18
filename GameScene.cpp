@@ -2,6 +2,7 @@
 #include "ui/CocosGUI.h"
 
 #include "FileControl.h"
+#include "TitleScene.h"
 
 USING_NS_CC;
 
@@ -77,6 +78,12 @@ void GameScene::onKeyRelease(EventKeyboard::KeyCode keyCode,Event* event)
 			cmd = COMMAND::RightStop;
 		}
 			break;
+		case EventKeyboard::KeyCode::KEY_F10:
+		{
+			auto scene = TitleScene::createScene();
+			Director::getInstance()->replaceScene(scene);
+		}
+			break;
 	}
 
 	m_hero->getCommand(cmd);
@@ -140,7 +147,7 @@ void GameScene::paintMap()
 				default:break;
 			}
 
-			/*
+			///*
 			//加载格子编号，调试用
 			auto lab = Label::createWithSystemFont(StringUtils::format("%d",i), "", 16);
 			lab->setPosition(Vec2(i*GRID_SIZE, VISIBLE_SIZE.height - j*GRID_SIZE) + Vec2(GRID_SIZE/2,-GRID_SIZE/2));
@@ -163,16 +170,17 @@ bool GameScene::isNextLand(Vec2 pos,bool isDown)
 	int x = (pos.x + GRID_SIZE / 2) / GRID_SIZE;
 	int y = (VISIBLE_SIZE.height - pos.y + GRID_SIZE / 2) / GRID_SIZE;
 
-	/*
+	///*
 	//测试用，标明主角当前所在的x轴格子编号
+	//auto str = m_hero->getIsFalling() ? "Falling" : "NotFall";
 	auto lab = (Label*)m_hero->getChildByTag(777);
 	if (lab)
 	{
-		lab->setString(StringUtils::format("%d", x));
+		lab->setString(StringUtils::format("%d %d",x, y));
 	}
 	else
 	{
-		lab = Label::createWithSystemFont(StringUtils::format("%d", x), "", 32);
+		lab = Label::createWithSystemFont(StringUtils::format("%d %d",x, y), "", 24);
 		lab->setPosition(m_hero->getContentSize() / 2);
 		m_hero->addChild(lab, 99 , 777);
 	}
@@ -207,23 +215,23 @@ bool GameScene::isNextLand(Vec2 pos,bool isDown)
 	return flag;
 }
 
-void GameScene::fallDown()
+void GameScene::fallDown(character* ch)
 {
 	//当英雄角色处于跳跃状态时不再判断
-	if (m_hero)
+	if (ch)
 	{
-		if (!m_hero->getIsJumping())
+		if (!ch->getIsJumping())
 		{
 			//判断该位置下一格是否是障碍物，如果是则停止下落
-			if (isNextLand(m_hero->getPosition(),true))
+			if (isNextLand(ch->getPosition(),true))
 			{
 				//停止下落
-				m_hero->land();
+				ch->land();
 			}
-			else if (!m_hero->getIsFalling())
+			else if (!ch->getIsFalling())
 			{
 				//开始下落
-				m_hero->fallDown();
+				ch->fallDown();
 			}
 		}
 		else
@@ -240,9 +248,34 @@ void GameScene::fallDown()
 
 }
 
+void GameScene::leftNRight(character* ch)
+{
+	if (ch && !ch->getIsJumping())
+	{
+		int x = (ch->getPositionX() + GRID_SIZE / 2) / GRID_SIZE;
+		int y = (VISIBLE_SIZE.height - ch->getPositionY() + GRID_SIZE / 2) / GRID_SIZE;
+
+		bool left = false, right = false;
+		
+		if (m_map[x + 1][y] == MapElement::BAREAL || m_map[x + 1][y - 1] == MapElement::BAREAL)
+		{
+			ch->stop(DIRECTION::RIGHT);
+			right = true;
+		}
+		if (m_map[x - 2][y] == MapElement::BAREAL || m_map[x - 2][y - 1] == MapElement::BAREAL)
+		{
+			ch->stop(DIRECTION::LEFT);
+			left = true;
+		}
+
+		ch->stopped(left, right);
+	}
+}
+
 void GameScene::update(float)
 {
-	fallDown();
+	fallDown(m_hero);
+	leftNRight(m_hero);
 }
 
 bool GameScene::init(int id)

@@ -58,7 +58,8 @@ void character::move(DIRECTION dr)
 	{
 		case DIRECTION::LEFT:
 		{
-			this->runAction(MoveBy::create(time, Vec2(-GRID_SIZE, 0)));
+			if(!m_isLeftStop)
+				this->runAction(MoveBy::create(time, Vec2(-GRID_SIZE, 0)));
 			schedule([=](float) {
 				this->runAction(MoveBy::create(time,Vec2(-GRID_SIZE,0)));
 			}, time, "moveLeft");
@@ -66,7 +67,8 @@ void character::move(DIRECTION dr)
 			break;
 		case DIRECTION::RIGHT:
 		{
-			this->runAction(MoveBy::create(time, Vec2(GRID_SIZE, 0)));
+			if (!m_isRightStop)
+				this->runAction(MoveBy::create(time, Vec2(GRID_SIZE, 0)));
 			schedule([=](float) {
 				this->runAction(MoveBy::create(time, Vec2(GRID_SIZE, 0)));
 			}, time, "moveRight");
@@ -96,6 +98,12 @@ void character::stop(DIRECTION dr)
 	}
 }
 
+void character::stopped(bool left, bool right)
+{
+	m_isLeftStop = left;
+	m_isRightStop = right;
+}
+
 void character::jump()
 {
 	if (m_isJumping || m_isFalling)
@@ -123,7 +131,7 @@ void character::jumpToHead()
 void character::fallDown()
 {
 	m_isFalling = true;
-	this->runAction(MoveBy::create(HERO_FALL_TIME, Vec2(0, -GRID_SIZE)));
+	//this->runAction(MoveBy::create(HERO_FALL_TIME, Vec2(0, -GRID_SIZE)));
 	schedule([=](float) {
 		this->runAction(MoveBy::create(HERO_FALL_TIME,Vec2(0,-GRID_SIZE)));
 	}, HERO_FALL_TIME, "fallDown");

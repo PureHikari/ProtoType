@@ -42,7 +42,9 @@ public:
 	void initHero();
 
 	//实现英雄的下落，后期也会实现怪物的下落效果
-	void fallDown();
+	void fallDown(character*);
+	//检查左右两边是否
+	void leftNRight(character*);
 	//返回是否下一格是否可以着陆
 	bool isNextLand(cocos2d::Vec2,bool);
 

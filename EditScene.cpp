@@ -189,6 +189,7 @@ bool EditScene::init(int id, bool isNew)
 	}
 
 	m_mapId = id;
+	m_isNew = isNew;
 
 	auto bg = Sprite::create("bg.png");
 	bg->setPosition(VISIBLE_SIZE / 2);
