@@ -56,6 +56,11 @@ void Hero::getCommand(COMMAND cmd)
 			jump();
 		}
 			break;
+		case COMMAND::Attack:
+		{
+			startAttack();
+		}
+		break;
 		default:
 			break;
 	}

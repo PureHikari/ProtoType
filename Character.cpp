@@ -144,3 +144,14 @@ void character::land()
 	}, 0.1f, "forSafe");
 	unschedule("fallDown");
 }
+
+void character::startAttack()
+{
+	m_isAttacking = true;
+}
+
+int character::attack()
+{
+	m_isAttacking = false;
+	return 1;
+}

@@ -9,7 +9,8 @@ enum class COMMAND
 	LeftStop,//向左移动停止
 	RightMove,//向右移动
 	RightStop,//向右停止
-	Jump//跳跃
+	Jump,//跳跃
+	Attack//攻击
 };
 
 //英雄的类，继承自角色类character

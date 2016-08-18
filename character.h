@@ -30,6 +30,13 @@ public:
 	void fallDown();//开始下落
 	void land();//落到地面，停止下落
 
+	//void attack();//攻击
+	void startAttack();//开始攻击
+	int attack();//攻击的函数，返回要释放技能的编号，此处暂时固定为1
+	bool isAttack() { return m_isAttacking; }//返回是否处于攻击状态
+
+	DIRECTION getDirection() { return m_direction; }//获得角色的方向
+
 	void stopped(bool left, bool right);
 protected:
 	//角色的朝向，默认为朝右
@@ -45,4 +52,7 @@ protected:
 
 	bool m_isLeftStop = false;
 	bool m_isRightStop = false;
+
+	//是否处于攻击的状态
+	bool m_isAttacking = false;
 };

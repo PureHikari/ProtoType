@@ -4,6 +4,8 @@
 #include "FileControl.h"
 #include "TitleScene.h"
 
+#include "Logical.h"
+
 USING_NS_CC;
 
 Scene* GameScene::createScene(int id)
@@ -84,6 +86,11 @@ void GameScene::onKeyRelease(EventKeyboard::KeyCode keyCode,Event* event)
 			Director::getInstance()->replaceScene(scene);
 		}
 			break;
+		case EventKeyboard::KeyCode::KEY_Q:
+		{
+			cmd = COMMAND::Attack;
+		}
+		break;
 	}
 
 	m_hero->getCommand(cmd);
@@ -276,6 +283,8 @@ void GameScene::update(float)
 {
 	fallDown(m_hero);
 	leftNRight(m_hero);
+
+	Logical::getInstance()->checkSkill(m_hero);
 }
 
 bool GameScene::init(int id)
@@ -294,6 +303,8 @@ bool GameScene::init(int id)
 	initListener();
 
 	scheduleUpdate();
+
+	Logical::getInstance()->init(this);
 
 	//临时的，重新开始的按钮
 	auto button = cocos2d::ui::Button::create("closeNormal.png");
