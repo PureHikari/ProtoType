@@ -155,3 +155,14 @@ int character::attack()
 	m_isAttacking = false;
 	return 1;
 }
+
+void character::hit(int dmg)
+{
+	auto lab = Label::createWithSystemFont(StringUtils::format("%d", dmg), "", 24);
+	lab->setPosition(this->getContentSize() / 2);
+	this->addChild(lab);
+
+	lab->setColor(Color3B::RED);
+
+	lab->runAction(Sequence::create(MoveBy::create(1, Vec2(0, GRID_SIZE * 2)), RemoveSelf::create(), nullptr));
+}

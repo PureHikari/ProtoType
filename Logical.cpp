@@ -22,6 +22,8 @@ void Logical::init(Node* node)
 
 void Logical::checkSkill(character* ch)
 {
+	Vector<Skill*> removeable;
+
 	if (ch->isAttack())
 	{
 		int skillNum = ch->attack();
@@ -41,5 +43,29 @@ void Logical::checkSkill(character* ch)
 
 		skill->setPosition(pos);
 		m_layer->addChild(skill);
+
+		m_skills.pushBack(skill);
 	}
+
+	for (auto skill : m_skills)
+	{
+		if (skill->getIsAvaliable())
+		{
+			if (skill->checkCollision(ch))
+			{
+				ch->hit(1);
+			}
+		}
+		else
+		{
+			removeable.pushBack(skill);
+			skill->removeFromParent();
+		}
+	}
+
+	for (auto skill : removeable)
+	{
+		m_skills.eraseObject(skill);
+	}
+	removeable.clear();
 }

@@ -18,4 +18,6 @@ private:
 	static Logical* m_self;
 
 	cocos2d::Node* m_layer = nullptr;
+
+	cocos2d::Vector<Skill *> m_skills;
 };

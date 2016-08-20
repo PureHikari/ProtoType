@@ -38,6 +38,8 @@ public:
 	DIRECTION getDirection() { return m_direction; }//获得角色的方向
 
 	void stopped(bool left, bool right);
+
+	void hit(int dmg);
 protected:
 	//角色的朝向，默认为朝右
 	DIRECTION m_direction = DIRECTION::RIGHT;

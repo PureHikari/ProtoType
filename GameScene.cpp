@@ -179,15 +179,23 @@ bool GameScene::isNextLand(Vec2 pos,bool isDown)
 
 	///*
 	//测试用，标明主角当前所在的x轴格子编号
-	//auto str = m_hero->getIsFalling() ? "Falling" : "NotFall";
-	auto lab = (Label*)m_hero->getChildByTag(777);
-	if (lab)
+	std::string str;
+	if (m_hero->getDirection() == DIRECTION::LEFT)
 	{
-		lab->setString(StringUtils::format("%d %d",x, y));
+		str = "Left";
 	}
 	else
 	{
-		lab = Label::createWithSystemFont(StringUtils::format("%d %d",x, y), "", 24);
+		str = "Right";
+	}
+	auto lab = (Label*)m_hero->getChildByTag(777);
+	if (lab)
+	{
+		lab->setString(StringUtils::format("%s",str.c_str()));
+	}
+	else
+	{
+		lab = Label::createWithSystemFont(StringUtils::format("%s",str.c_str()), "", 24);
 		lab->setPosition(m_hero->getContentSize() / 2);
 		m_hero->addChild(lab, 99 , 777);
 	}
