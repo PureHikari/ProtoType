@@ -39,7 +39,13 @@ public:
 
 	void stopped(bool left, bool right);
 
+	//受伤
 	void hit(int dmg);
+	//获得治疗，保证生命值不超过最大生命值
+	void heal(int heal);
+
+	int getHp() { return m_hp; }
+	bool getIsAlive() { return m_isAlive; }
 protected:
 	//角色的朝向，默认为朝右
 	DIRECTION m_direction = DIRECTION::RIGHT;
@@ -57,4 +63,10 @@ protected:
 
 	//是否处于攻击的状态
 	bool m_isAttacking = false;
+
+	//角色的生命值和最大生命值
+	int m_hp = 100;
+	int m_maxHp = 100;
+
+	bool m_isAlive = true;
 };

@@ -25,6 +25,23 @@ bool character::init()
 	this->initWithFile("hero.png");
 	//this->setAnchorPoint(Vec2::ANCHOR_TOP_LEFT);
 
+	///*
+	//测试用代码，将血量显示在每个角色的头上并不断刷新
+	schedule([=](float) {
+		auto lab = static_cast<Label*>(this->getChildByTag(100));
+		if (lab)
+		{
+			lab->setString(StringUtils::format("%d/%d", m_hp, m_maxHp));
+		}
+		else
+		{
+			lab = Label::createWithSystemFont(StringUtils::format("%d/%d", m_hp, m_maxHp), "", 24);
+			lab->setPosition(Vec2(this->getContentSize().width / 2, this->getContentSize().height));
+			this->addChild(lab, 10, 100);
+		}
+	}, 0.1f, "fresh");
+	//*/
+
 	return true;
 }
 
@@ -165,4 +182,30 @@ void character::hit(int dmg)
 	lab->setColor(Color3B::RED);
 
 	lab->runAction(Sequence::create(MoveBy::create(1, Vec2(0, GRID_SIZE * 2)), RemoveSelf::create(), nullptr));
+
+	m_hp -= dmg;
+	if (m_hp <= 0)
+	{
+		m_hp = 0;
+
+		m_isAlive = false;
+	}
+}
+
+void character::heal(int heal)
+{
+	auto lab = Label::createWithSystemFont(StringUtils::format("%d", heal), "", 24);
+	lab->setPosition(this->getContentSize() / 2);
+	this->addChild(lab);
+
+	lab->setColor(Color3B::GREEN);
+
+	lab->runAction(Sequence::create(MoveBy::create(1, Vec2(0, GRID_SIZE * 2)), RemoveSelf::create(), nullptr));
+
+	m_hp += heal;
+
+	if (m_hp > m_maxHp)
+	{
+		m_hp = m_maxHp;
+	}
 }

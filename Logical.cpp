@@ -53,7 +53,7 @@ void Logical::checkSkill(character* ch)
 		{
 			if (skill->checkCollision(ch))
 			{
-				ch->hit(1);
+				ch->hit(skill->getDmg());
 			}
 		}
 		else

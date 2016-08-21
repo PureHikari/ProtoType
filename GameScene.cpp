@@ -90,6 +90,13 @@ void GameScene::onKeyRelease(EventKeyboard::KeyCode keyCode,Event* event)
 		{
 			cmd = COMMAND::Attack;
 		}
+			break;
+		case EventKeyboard::KeyCode::KEY_E:
+		{
+			//²âÊÔÓÃ£¬Ö±½ÓÎªÓ¢ĞÛ»Ö¸´50ÑªÁ¿
+			m_hero->heal(50);
+			return;
+		}
 		break;
 	}
 

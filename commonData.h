@@ -21,6 +21,9 @@ const float HERO_MOVE_TIME = 0.25f;
 //获取屏幕大小
 #define VISIBLE_SIZE Director::getInstance()->getVisibleSize()
 
+//技能类中将角色从命中列表中删除的动作的tag
+const int DEL_TAG = 777;
+
 //定义各种zorder
 #define BG_ZORDER -1
 #define BR_ZORDER 1
