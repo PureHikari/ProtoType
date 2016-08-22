@@ -36,10 +36,46 @@ bool character::init()
 		else
 		{
 			lab = Label::createWithSystemFont(StringUtils::format("%d/%d", m_hp, m_maxHp), "", 24);
-			lab->setPosition(Vec2(this->getContentSize().width / 2, this->getContentSize().height));
+			lab->setPosition(Vec2(this->getContentSize().width / 2, this->getContentSize().height + lab->getContentSize().height));
 			this->addChild(lab, 10, 100);
 		}
+
+		if (m_hp > m_maxHp * 0.2f)
+		{
+			lab->setColor(Color3B::GREEN);
+		}
+		else
+		{
+			lab->setColor(Color3B::RED);
+		}
 	}, 0.1f, "fresh");
+	//*/
+
+	///*
+	//测试用代码，用于加载一个指定的技能
+	skillData tempS;
+	tempS.cdRealTime = 0;
+	tempS.CoolDown = 120;
+	tempS.id = 1;
+
+	m_skills.push_back(tempS);
+	//*/
+
+	///*
+	//测试用代码，用于展示角色的技能冷却
+	schedule([=](float) {
+		auto cd = (Label*)getChildByTag(778);
+		if (cd)
+		{
+			cd->setString(StringUtils::format("%d", m_skills.at(0).cdRealTime));
+		}
+		else
+		{
+			cd = Label::createWithSystemFont(StringUtils::format("%d", m_skills.at(0).cdRealTime), "", 24);
+			cd->setPosition(Vec2(this->getContentSize().width / 2, -cd->getContentSize().height));
+			this->addChild(cd, 10, 778);
+		}
+	},0.1f,"cd");
 	//*/
 
 	return true;
@@ -164,12 +200,17 @@ void character::land()
 
 void character::startAttack()
 {
+	if (m_skills.at(0).cdRealTime > 0)
+		return;
 	m_isAttacking = true;
 }
 
 int character::attack()
 {
 	m_isAttacking = false;
+
+	m_skills.at(0).cdRealTime = m_skills.at(0).CoolDown;
+
 	return 1;
 }
 
@@ -207,5 +248,27 @@ void character::heal(int heal)
 	if (m_hp > m_maxHp)
 	{
 		m_hp = m_maxHp;
+	}
+}
+
+int character::getSkillCD(int id)
+{
+	if (id > m_skills.size())
+	{
+		return -1;
+	}
+
+	return m_skills.at(id).cdRealTime;
+}
+
+void character::coolDown()
+{
+	for (int i = 0; i < m_skills.size(); i++)
+	{
+		m_skills.at(i).cdRealTime--;
+		if (m_skills.at(i).cdRealTime < 0)
+		{
+			m_skills.at(i).cdRealTime = 0;
+		}
 	}
 }

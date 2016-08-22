@@ -161,7 +161,7 @@ void GameScene::paintMap()
 				default:break;
 			}
 
-			///*
+			/*
 			//加载格子编号，调试用
 			auto lab = Label::createWithSystemFont(StringUtils::format("%d",i), "", 16);
 			lab->setPosition(Vec2(i*GRID_SIZE, VISIBLE_SIZE.height - j*GRID_SIZE) + Vec2(GRID_SIZE/2,-GRID_SIZE/2));
@@ -175,34 +175,25 @@ void GameScene::paintMap()
 void GameScene::initHero()
 {
 	m_hero = Hero::create();
-	m_hero->setPosition(m_heroPos);
+	m_hero->setPosition(m_heroPos + Vec2(GRID_SIZE/2,0));
 	this->addChild(m_hero);
 }
 
 bool GameScene::isNextLand(Vec2 pos,bool isDown)
 {
-	int x = (pos.x + GRID_SIZE / 2) / GRID_SIZE;
+	int x = pos.x  / GRID_SIZE;
 	int y = (VISIBLE_SIZE.height - pos.y + GRID_SIZE / 2) / GRID_SIZE;
 
-	///*
+	/*
 	//测试用，标明主角当前所在的x轴格子编号
-	std::string str;
-	if (m_hero->getDirection() == DIRECTION::LEFT)
-	{
-		str = "Left";
-	}
-	else
-	{
-		str = "Right";
-	}
 	auto lab = (Label*)m_hero->getChildByTag(777);
 	if (lab)
 	{
-		lab->setString(StringUtils::format("%s",str.c_str()));
+		lab->setString(StringUtils::format("%d",x));
 	}
 	else
 	{
-		lab = Label::createWithSystemFont(StringUtils::format("%s",str.c_str()), "", 24);
+		lab = Label::createWithSystemFont(StringUtils::format("%d",x), "", 24);
 		lab->setPosition(m_hero->getContentSize() / 2);
 		m_hero->addChild(lab, 99 , 777);
 	}
@@ -219,14 +210,14 @@ bool GameScene::isNextLand(Vec2 pos,bool isDown)
 	{
 		if (isDown)
 		{
-			if (m_map[x][y + 1] == MapElement::BAREAL || m_map[x - 1][y + 1] == MapElement::BAREAL)
+			if (m_map[x][y + 1] == MapElement::BAREAL )//|| m_map[x - 1][y + 1] == MapElement::BAREAL)
 			{
 				flag = true;
 			}
 		}
 		else
 		{
-			if (m_map[x][y - 1] == MapElement::BAREAL || m_map[x + 1][y - 1] == MapElement::BAREAL)
+			if (m_map[x][y - 1] == MapElement::BAREAL )//|| m_map[x + 1][y - 1] == MapElement::BAREAL)
 			{
 				flag = true;
 			}
@@ -274,7 +265,7 @@ void GameScene::leftNRight(character* ch)
 {
 	if (ch && !ch->getIsJumping())
 	{
-		int x = (ch->getPositionX() + GRID_SIZE / 2) / GRID_SIZE;
+		int x = ch->getPositionX() / GRID_SIZE;
 		int y = (VISIBLE_SIZE.height - ch->getPositionY() + GRID_SIZE / 2) / GRID_SIZE;
 
 		bool left = false, right = false;
@@ -284,7 +275,7 @@ void GameScene::leftNRight(character* ch)
 			ch->stop(DIRECTION::RIGHT);
 			right = true;
 		}
-		if (m_map[x - 2][y] == MapElement::BAREAL || m_map[x - 2][y - 1] == MapElement::BAREAL)
+		if (m_map[x - 1][y] == MapElement::BAREAL || m_map[x - 1][y - 1] == MapElement::BAREAL)
 		{
 			ch->stop(DIRECTION::LEFT);
 			left = true;
@@ -298,6 +289,7 @@ void GameScene::update(float)
 {
 	fallDown(m_hero);
 	leftNRight(m_hero);
+	m_hero->coolDown();
 
 	Logical::getInstance()->checkSkill(m_hero);
 }

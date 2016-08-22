@@ -9,6 +9,14 @@ enum class DIRECTION
 	RIGHT
 };
 
+//角色所需的技能属性
+struct skillData
+{
+	int id;//技能的id
+	int CoolDown;//技能的冷却时间
+	int cdRealTime;//技能的冷却计时
+};
+
 //角色的基类，包含角色的移动和基本的属性，主角将继承此类
 class character :public cocos2d::Sprite
 {
@@ -46,6 +54,11 @@ public:
 
 	int getHp() { return m_hp; }
 	bool getIsAlive() { return m_isAlive; }
+
+	//根据顺序获取技能的冷却计时，返回-1表示没有该技能
+	int getSkillCD(int id);
+
+	void coolDown();
 protected:
 	//角色的朝向，默认为朝右
 	DIRECTION m_direction = DIRECTION::RIGHT;
@@ -69,4 +82,6 @@ protected:
 	int m_maxHp = 100;
 
 	bool m_isAlive = true;
+
+	std::vector<skillData>m_skills;
 };

@@ -24,7 +24,7 @@ bool Skill::init(int id)
 
 	this->initWithFile("skill.png");
 
-	this->runAction(Sequence::create(DelayTime::create(2.0f), CallFuncN::create([=](Ref*) {
+	this->runAction(Sequence::create(DelayTime::create(m_existTime), CallFuncN::create([=](Ref*) {
 		this->m_isAvaliable = false;
 
 		for (auto ch : this->m_hitted)

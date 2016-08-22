@@ -32,7 +32,27 @@ void TitleScene::showMapSelect(bool isEdit)
 	for (auto i = 0; i < data.size(); i++)
 	{
 		auto btn = Button::create("maps.png");
-		btn->setPosition(Vec2(VISIBLE_SIZE.width / 2,VISIBLE_SIZE.height - GRID_SIZE * i * 3 - GRID_SIZE * 2));
+		
+		Vec2 pos = Vec2::ZERO;
+
+		if (i < 5)
+		{
+			pos.x = GRID_SIZE;
+		}
+		else if (i < 10)
+		{
+			pos.x = GRID_SIZE * 11;
+		}
+		else
+		{
+			pos.x = GRID_SIZE * 21;
+		}
+
+		pos.y = VISIBLE_SIZE.height - GRID_SIZE*(i % 5 * 3 + 1);
+
+		btn->setAnchorPoint(Vec2::ANCHOR_TOP_LEFT);
+		btn->setPosition(pos);
+
 		layer->addChild(btn);
 
 		btn->setTitleText(StringUtils::format("%d", i));
@@ -47,6 +67,27 @@ void TitleScene::showMapSelect(bool isEdit)
 				Director::getInstance()->replaceScene(GameScene::createScene(data.at(i).id));
 			}
 		});
+
+		if (isEdit)
+		{
+			auto btn_del = Button::create("del.png");
+			layer->addChild(btn_del);
+
+			btn_del->addClickEventListener([=](Ref*) {
+				auto data = FileControl::getAllMap();
+
+				data.erase(data.begin() + i);
+
+				FileControl::saveAllMap(data);
+
+				layer->removeFromParent();
+
+				this->showMapSelect(isEdit);
+			});
+
+			btn_del->setAnchorPoint(Vec2::ANCHOR_TOP_LEFT);
+			btn_del->setPosition(pos + Vec2(8*GRID_SIZE,0));
+		}
 	}
 
 	if (isEdit)

@@ -6,6 +6,14 @@ USING_NS_CC;
 
 //==============================================
 //ÔªËØ²¿·Ö
+
+std::string mode[] = {
+	"blank.png",
+	"breal.png",
+	"enemyPos.png",
+	"heroPos.png"
+};
+
 MapGrid* MapGrid::create()
 {
 	auto mg = new MapGrid();

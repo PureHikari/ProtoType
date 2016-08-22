@@ -30,4 +30,7 @@ private:
 	//技能应该造成的伤害
 	//临时
 	int m_dmg = 10;
+
+	//技能持续的时间
+	float m_existTime = 1.0f;
 };

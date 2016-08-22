@@ -26,4 +26,5 @@ public:
 	static void saveMapData(allMapCell);
 
 	static allMap getAllMap();
+	static bool saveAllMap(allMap content);
 };

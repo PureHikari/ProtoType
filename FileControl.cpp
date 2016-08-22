@@ -116,3 +116,33 @@ void FileControl::saveMapData(allMapCell content)
 
 	file.close();
 }
+
+bool FileControl::saveAllMap(allMap content)
+{
+	auto path = FileUtils::getInstance()->getWritablePath() + "AllMapData";
+	ofstream file;
+
+	file.open(path.c_str());
+
+	if (file)
+	{
+		file << content.size() << endl;
+
+		for (auto i = content.begin(); i != content.end(); i++)
+		{
+			file << i->id << endl;
+			file << i->data.size() << endl;
+
+			for (auto j = i->data.begin(); j != i->data.end(); j++)
+			{
+				file << j->x << endl;
+				file << j->y << endl;
+				file << j->isBreal << endl;
+			}
+		}
+	}
+
+	file.close();
+
+	return true;
+}
