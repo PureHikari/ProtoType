@@ -25,54 +25,38 @@ bool character::init()
 	this->initWithFile("hero.png");
 	//this->setAnchorPoint(Vec2::ANCHOR_TOP_LEFT);
 
-	///*
-	//测试用代码，将血量显示在每个角色的头上并不断刷新
-	schedule([=](float) {
-		auto lab = static_cast<Label*>(this->getChildByTag(100));
-		if (lab)
-		{
-			lab->setString(StringUtils::format("%d/%d", m_hp, m_maxHp));
-		}
-		else
-		{
-			lab = Label::createWithSystemFont(StringUtils::format("%d/%d", m_hp, m_maxHp), "", 24);
-			lab->setPosition(Vec2(this->getContentSize().width / 2, this->getContentSize().height + lab->getContentSize().height));
-			this->addChild(lab, 10, 100);
-		}
-
-		if (m_hp > m_maxHp * 0.2f)
-		{
-			lab->setColor(Color3B::GREEN);
-		}
-		else
-		{
-			lab->setColor(Color3B::RED);
-		}
-	}, 0.1f, "fresh");
-	//*/
-
-	///*
-	//测试用代码，用于加载一个指定的技能
-	skillData tempS;
-	tempS.cdRealTime = 0;
-	tempS.CoolDown = 120;
-	tempS.id = 1;
-
-	m_skills.push_back(tempS);
-	//*/
+	this->initSkill();
 
 	///*
 	//测试用代码，用于展示角色的技能冷却
 	schedule([=](float) {
 		auto cd = (Label*)getChildByTag(778);
+
+		std::string str="";
+		int i = 0;
+		while (true)
+		{
+			int cd = this->getSkillCD(i);
+			if (cd != -1)
+			{
+				str += StringUtils::format("|%d", cd);
+			}
+			else
+			{
+				break;
+			}
+
+			i++;
+		}
+
 		if (cd)
 		{
-			cd->setString(StringUtils::format("%d", m_skills.at(0).cdRealTime));
+			cd->setString(str);
 		}
 		else
 		{
-			cd = Label::createWithSystemFont(StringUtils::format("%d", m_skills.at(0).cdRealTime), "", 24);
-			cd->setPosition(Vec2(this->getContentSize().width / 2, -cd->getContentSize().height));
+			cd = Label::createWithSystemFont(str, "", 24);
+			cd->setPosition(Vec2(this->getContentSize().width / 2, this->getContentSize().height + cd->getContentSize().height));
 			this->addChild(cd, 10, 778);
 		}
 	},0.1f,"cd");
@@ -81,9 +65,12 @@ bool character::init()
 	return true;
 }
 
-void character::turnOff()
+void character::turnOff(DIRECTION dr)
 {
-	if (m_direction==DIRECTION::RIGHT)
+	if (dr == m_direction)
+		return;
+
+	if (dr ==DIRECTION::LEFT)
 	{
 		m_direction = DIRECTION::LEFT;
 		this->setSkewX(180);
@@ -98,7 +85,7 @@ void character::turnOff()
 //采用计时器的移动方式保证每次移动都能对应格子线
 void character::move(DIRECTION dr)
 {
-	turnOff();
+	turnOff(dr);
 
 	auto time = m_speed;
 	if (m_isJumping)
@@ -198,10 +185,15 @@ void character::land()
 	unschedule("fallDown");
 }
 
-void character::startAttack()
+void character::startAttack(int num)
 {
-	if (m_skills.at(0).cdRealTime > 0)
+	if (num >= m_skills.size())
 		return;
+
+	if (m_isFalling || m_isJumping || m_skills.at(num).cdRealTime > 0)
+		return;
+
+	m_skillNum = num;
 	m_isAttacking = true;
 }
 
@@ -209,9 +201,9 @@ int character::attack()
 {
 	m_isAttacking = false;
 
-	m_skills.at(0).cdRealTime = m_skills.at(0).CoolDown;
+	m_skills.at(m_skillNum).cdRealTime = m_skills.at(m_skillNum).CoolDown;
 
-	return 1;
+	return m_skills.at(m_skillNum).id;
 }
 
 void character::hit(int dmg)
@@ -253,7 +245,7 @@ void character::heal(int heal)
 
 int character::getSkillCD(int id)
 {
-	if (id > m_skills.size())
+	if (id >= m_skills.size())
 	{
 		return -1;
 	}
@@ -271,4 +263,36 @@ void character::coolDown()
 			m_skills.at(i).cdRealTime = 0;
 		}
 	}
+}
+
+bool character::isMonster()
+{
+	if (m_standPoint == Character_type::Monster)
+		return true;
+	else
+		return false;
+}
+
+void character::initSkill()
+{
+	//加载第一个技能，正面近身攻击一次
+	skillData temp0;
+	temp0.cdRealTime = 0;
+	temp0.CoolDown = 120;
+	temp0.id = 0;
+	m_skills.push_back(temp0);
+
+	//加载第二个技能，向正面发射
+	skillData temp1;
+	temp1.cdRealTime = 0;
+	temp1.CoolDown = 120;
+	temp1.id = 1;
+	m_skills.push_back(temp1);
+
+	//加载第三个技能，从中心向两方扩散
+	skillData temp2;
+	temp2.cdRealTime = 0;
+	temp2.CoolDown = 120;
+	temp2.id = 2;
+	m_skills.push_back(temp2);
 }

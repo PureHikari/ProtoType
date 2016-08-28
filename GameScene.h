@@ -1,6 +1,7 @@
 #pragma once
  
 #include "Hero.h"
+#include "Monster.h"
 #include "commonData.h"
 
 //地图元素的枚举，暂时只有空和障碍
@@ -48,6 +49,9 @@ public:
 	//返回是否下一格是否可以着陆
 	bool isNextLand(cocos2d::Vec2,bool);
 
+	//创建怪物的函数，暂时只生成一个靶子
+	void createEnemy();
+
 	void update(float);
 private:
 	
@@ -55,6 +59,9 @@ private:
 	Hero* m_hero=nullptr;
 	//英雄的初始位置
 	cocos2d::Vec2 m_heroPos = cocos2d::Vec2::ZERO;
+
+	//怪物的向量
+	cocos2d::Vector<Monster*> m_monsters;
 
 	//地图,用二维数组表示，暂时事先规定大小
 	//i表示横向的数据，j表示竖向的数据，绘制时，从左上绘制

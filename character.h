@@ -9,6 +9,13 @@ enum class DIRECTION
 	RIGHT
 };
 
+//枚举各种角色的类型
+enum class Character_type
+{
+	Monster,
+	Friend
+};
+
 //角色所需的技能属性
 struct skillData
 {
@@ -24,7 +31,7 @@ public:
 	static character* create();
 	bool virtual init();
 
-	void turnOff();//转身的函数
+	void turnOff(DIRECTION dr);//转身的函数
 
 	void move(DIRECTION dr);//实现移动的函数,参数为移动的方向
 	void stop(DIRECTION dr);//停止移动的函数，参数为停止的方向
@@ -35,11 +42,13 @@ public:
 	bool getIsJumping() { return m_isJumping; }
 	bool getIsFalling() { return m_isFalling; }
 
+	void initSkill();
+
 	void fallDown();//开始下落
 	void land();//落到地面，停止下落
 
 	//void attack();//攻击
-	void startAttack();//开始攻击
+	void startAttack(int num);//开始攻击
 	int attack();//攻击的函数，返回要释放技能的编号，此处暂时固定为1
 	bool isAttack() { return m_isAttacking; }//返回是否处于攻击状态
 
@@ -57,6 +66,9 @@ public:
 
 	//根据顺序获取技能的冷却计时，返回-1表示没有该技能
 	int getSkillCD(int id);
+
+	//返回角色是否是怪物
+	bool isMonster();
 
 	void coolDown();
 protected:
@@ -83,5 +95,11 @@ protected:
 
 	bool m_isAlive = true;
 
+	//角色的类型，默认是与玩家敌对的怪物
+	Character_type m_standPoint = Character_type::Monster;
+
 	std::vector<skillData>m_skills;
+
+	//当前要使用技能的编号
+	int m_skillNum = 0;
 };

@@ -10,7 +10,9 @@ enum class COMMAND
 	RightMove,//向右移动
 	RightStop,//向右停止
 	Jump,//跳跃
-	Attack//攻击
+	Attack,//攻击
+	Skill1,//技能1
+	Skill2//技能2
 };
 
 //英雄的类，继承自角色类character

@@ -8,16 +8,28 @@
 class Skill :public cocos2d::Sprite
 {
 public:
-	static Skill* create(int id);
-	bool virtual init(int id);
+	static Skill* create(int id,bool isMsRelease,bool isLeft);
+	bool virtual init(int id, bool isMsRelease, bool isLeft);
 
 	bool getIsAvaliable() { return m_isAvaliable; }
 
 	//检查传入的角色是否被该技能命中
 	bool checkCollision(cocos2d::Sprite*);
 
+	//按照具体的类型来执行相应的操作
+	void action();
+
+	//处理后事
+	void doBeforeDie();
+
 	int getDmg() { return m_dmg; }
+	bool isMsReleased() { return m_isMsRelease; }
 private:
+	//编号
+	int m_id = -1;
+
+	bool m_isLeft = false;
+
 	//是否有效
 	bool m_isAvaliable = true;
 
@@ -33,4 +45,7 @@ private:
 
 	//技能持续的时间
 	float m_existTime = 1.0f;
+
+	//是否由怪物释放
+	bool m_isMsRelease = false;
 };

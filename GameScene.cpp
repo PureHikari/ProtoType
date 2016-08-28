@@ -93,10 +93,14 @@ void GameScene::onKeyRelease(EventKeyboard::KeyCode keyCode,Event* event)
 			break;
 		case EventKeyboard::KeyCode::KEY_E:
 		{
-			//测试用，直接为英雄恢复50血量
-			m_hero->heal(50);
-			return;
+			cmd = COMMAND::Skill1;
 		}
+			break;
+		case EventKeyboard::KeyCode::KEY_R:
+		{
+			cmd = COMMAND::Skill2;
+		}
+			break;
 		break;
 	}
 
@@ -179,21 +183,32 @@ void GameScene::initHero()
 	this->addChild(m_hero);
 }
 
+void GameScene::createEnemy()
+{
+	auto enmey = Monster::create();
+	enmey->setPosition(Vec2(VISIBLE_SIZE.width / 2, VISIBLE_SIZE.height - GRID_SIZE * 2));
+	this->addChild(enmey);
+
+	m_monsters.pushBack(enmey);
+}
+
 bool GameScene::isNextLand(Vec2 pos,bool isDown)
 {
 	int x = pos.x  / GRID_SIZE;
 	int y = (VISIBLE_SIZE.height - pos.y + GRID_SIZE / 2) / GRID_SIZE;
 
-	/*
+	//*
 	//测试用，标明主角当前所在的x轴格子编号
 	auto lab = (Label*)m_hero->getChildByTag(777);
+	std::string str;
+	str = m_hero->getDirection() == DIRECTION::LEFT ? "L" : "R";
 	if (lab)
 	{
-		lab->setString(StringUtils::format("%d",x));
+		lab->setString(str);
 	}
 	else
 	{
-		lab = Label::createWithSystemFont(StringUtils::format("%d",x), "", 24);
+		lab = Label::createWithSystemFont(str, "", 24);
 		lab->setPosition(m_hero->getContentSize() / 2);
 		m_hero->addChild(lab, 99 , 777);
 	}
@@ -292,6 +307,37 @@ void GameScene::update(float)
 	m_hero->coolDown();
 
 	Logical::getInstance()->checkSkill(m_hero);
+
+	Vector<Monster*> removeableEnemy;
+	for (auto ms : m_monsters)
+	{
+		if (ms->getIsAlive())
+		{
+			fallDown(ms);
+			leftNRight(ms);
+			ms->coolDown();
+
+			Logical::getInstance()->checkSkill(ms);
+		}
+		else
+		{
+			//如果该角色已经死亡
+			removeableEnemy.pushBack(ms);
+			ms->removeFromParent();
+		}
+	}
+
+	for (auto ms : removeableEnemy)
+	{
+		m_monsters.eraseObject(ms);
+	}
+
+	removeableEnemy.clear();
+
+	if (m_monsters.size() == 0)
+	{
+		createEnemy();
+	}
 }
 
 bool GameScene::init(int id)
@@ -306,6 +352,8 @@ bool GameScene::init(int id)
 	initMap();
 	paintMap();
 	initHero();
+
+	createEnemy();
 
 	initListener();
 

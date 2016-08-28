@@ -28,18 +28,22 @@ void Logical::checkSkill(character* ch)
 	{
 		int skillNum = ch->attack();
 
-		auto skill = Skill::create(skillNum);
 		auto dr = ch->getDirection();
 
 		Vec2 pos = Vec2::ZERO;
+		bool isLeft;
 		if (dr == DIRECTION::LEFT)
 		{
 			pos = ch->getPosition() + Vec2(-GRID_SIZE,0);
+			isLeft = true;
 		}
 		else
 		{
 			pos = ch->getPosition() + Vec2(GRID_SIZE, 0);
+			isLeft = false;
 		}
+
+		auto skill = Skill::create(skillNum, ch->isMonster(), isLeft);
 
 		skill->setPosition(pos);
 		m_layer->addChild(skill);
@@ -51,7 +55,7 @@ void Logical::checkSkill(character* ch)
 	{
 		if (skill->getIsAvaliable())
 		{
-			if (skill->checkCollision(ch))
+			if (skill->isMsReleased()!=ch->isMonster() && skill->checkCollision(ch))
 			{
 				ch->hit(skill->getDmg());
 			}

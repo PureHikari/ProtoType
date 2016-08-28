@@ -28,3 +28,6 @@ const int DEL_TAG = 777;
 #define BG_ZORDER -1
 #define BR_ZORDER 1
 #define HERO_ZOREDER 4
+
+//转身到开始移动的等待时间，如果按反方向的键持续超过这个时间才开始移动
+const float TURN_TIME = 0.5f;

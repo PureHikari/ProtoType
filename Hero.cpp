@@ -23,6 +23,7 @@ bool Hero::init()
 	}
 
 	m_speed = HERO_MOVE_TIME;
+	m_standPoint = Character_type::Friend;
 
 	return true;
 }
@@ -58,9 +59,19 @@ void Hero::getCommand(COMMAND cmd)
 			break;
 		case COMMAND::Attack:
 		{
-			startAttack();
+			startAttack(0);
 		}
-		break;
+			break;
+		case COMMAND::Skill1:
+		{
+			startAttack(1);
+		}
+			break;
+		case COMMAND::Skill2:
+		{
+			startAttack(2);
+		}
+			break;
 		default:
 			break;
 	}
